@@ -49,6 +49,7 @@ char* ptsname(int fd);
 int ptsname_r(int fd, char* buffer, size_t);
 int abs(int);
 long labs(long);
+long long llabs(long long);
 double atof(const char*);
 int system(const char* command);
 char* mktemp(char*);
@@ -59,6 +60,7 @@ size_t mbstowcs(wchar_t*, const char*, size_t);
 int mbtowc(wchar_t*, const char*, size_t);
 int wctomb(char*, wchar_t);
 size_t wcstombs(char*, const wchar_t*, size_t);
+int mblen(const char *, size_t);
 char* realpath(const char* pathname, char* buffer);
 
 #define RAND_MAX 32767
@@ -93,5 +95,8 @@ int grantpt(int fd);
 int unlockpt(int fd);
 
 long getauxval(long type);
+
+const char* getprogname();
+void setprogname(const char*);
 
 __END_DECLS

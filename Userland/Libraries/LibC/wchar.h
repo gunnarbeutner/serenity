@@ -28,4 +28,11 @@ wchar_t* wcstok(wchar_t*, const wchar_t*, wchar_t**);
 long wcstol(const wchar_t*, wchar_t**, int);
 long long wcstoll(const wchar_t*, wchar_t**, int);
 
+typedef struct {
+} mbstate_t;
+
+int mbsinit(const mbstate_t*);
+size_t mbrtowc(wchar_t* __restrict, const char* __restrict, size_t, mbstate_t* __restrict);
+size_t mbsrtowcs(wchar_t* __restrict, const char** __restrict, size_t, mbstate_t* __restrict);
+
 __END_DECLS

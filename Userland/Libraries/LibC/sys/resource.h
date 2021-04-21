@@ -11,6 +11,38 @@
 
 __BEGIN_DECLS
 
+enum {
+    PRIO_PROCESS = 1,
+    PRIO_PGRP,
+    PRIO_USER
+};
+
+enum {
+    RLIMIT_CORE = 1,
+    RLIMIT_CPU,
+    RLIMIT_DATA,
+    RLIMIT_FSIZE,
+    RLIMIT_NOFILE,
+    RLIMIT_STACK,
+    RLIMIT_AS
+};
+
+enum {
+    RUSAGE_SELF = 1,
+    RUSAGE_CHILDREN
+};
+
+typedef unsigned int rlim_t;
+
+#define RLIM_INFINITY UINT_MAX
+#define RLIM_SAVED_MAX RLIM_INFINITY
+#define RLIM_SAVED_CUR RLIM_INFINITY
+
+struct rlimit {
+    rlim_t rlim_cur;
+    rlim_t rlim_max;
+};
+
 struct rusage {
     struct timeval ru_utime;
     struct timeval ru_stime;
@@ -30,9 +62,10 @@ struct rusage {
     long ru_nivcsw;
 };
 
-#define RUSAGE_SELF 1
-#define RUSAGE_CHILDREN 2
-
-int getrusage(int who, struct rusage* usage);
+int  getpriority(int, id_t);
+int  getrlimit(int, struct rlimit *);
+int  getrusage(int, struct rusage *);
+int  setpriority(int, id_t, int);
+int  setrlimit(int, const struct rlimit *);
 
 __END_DECLS

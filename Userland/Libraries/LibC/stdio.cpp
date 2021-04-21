@@ -1196,7 +1196,7 @@ void funlockfile([[maybe_unused]] FILE* filehandle)
 
 FILE* tmpfile()
 {
-    char tmp_path[] = "/tmp/XXXXXX";
+    char tmp_path[] = P_tmpdir "/XXXXXX";
     int fd = mkstemp(tmp_path);
     if (fd < 0)
         return nullptr;

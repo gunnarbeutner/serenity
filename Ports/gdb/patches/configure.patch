@@ -1,0 +1,27 @@
+diff -Naur gdb-10.1/config.sub gdb-10.1.serenity/config.sub
+--- gdb-10.1/config.sub	2020-09-13 04:33:40.000000000 +0200
++++ gdb-10.1.serenity/config.sub	2021-04-21 15:18:59.790336951 +0200
+@@ -1338,7 +1338,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST end in a * to match a version number.
+ 	# sysv* is not here because it comes later, after sysvr4.
+-	gnu* | bsd* | mach* | minix* | genix* | ultrix* | irix* \
++	gnu* | bsd* | mach* | minix* | genix* | ultrix* | irix* | serenity* \
+ 	     | *vms* | esix* | aix* | cnk* | sunos | sunos[34]*\
+ 	     | hpux* | unos* | osf* | luna* | dgux* | auroraux* | solaris* \
+ 	     | sym* | kopensolaris* | plan9* \
+diff -Naur gdb-10.1/bfd/config.bfd gdb-10.1.serenity/bfd/config.bfd
+--- gdb-10.1/bfd/config.bfd	2021-04-21 15:20:59.262754279 +0200
++++ gdb-10.1.serenity/bfd/config.bfd	2021-04-21 15:20:41.892403601 +0200
+@@ -634,6 +634,11 @@
+     targ_selvecs="iamcu_elf32_vec i386_pei_vec"
+     targ64_selvecs="x86_64_elf64_vec x86_64_elf32_vec x86_64_pei_vec l1om_elf64_vec k1om_elf64_vec"
+     ;;
++  i[3-7]86-*-serenity*)
++    targ_defvec=i386_elf32_vec
++    targ_selvecs="iamcu_elf32_vec i386_pei_vec"
++    targ64_selvecs="x86_64_elf64_vec x86_64_elf32_vec x86_64_pei_vec l1om_elf64_vec k1om_elf64_vec"
++    ;;
+   i[3-7]86-*-redox*)
+     targ_defvec=i386_elf32_vec
+     targ_selvecs=

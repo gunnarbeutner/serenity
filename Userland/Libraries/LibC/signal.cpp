@@ -48,6 +48,7 @@ sighandler_t signal(int signum, sighandler_t handler)
 
 int sigaction(int signum, const struct sigaction* act, struct sigaction* old_act)
 {
+    dbgln("signum: {}, act: {}", signum, act);
     int rc = syscall(SC_sigaction, signum, act, old_act);
     __RETURN_WITH_ERRNO(rc, rc, -1);
 }

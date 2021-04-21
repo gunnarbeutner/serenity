@@ -54,5 +54,6 @@ void rewinddir(DIR*);
 struct dirent* readdir(DIR*);
 int readdir_r(DIR*, struct dirent*, struct dirent**);
 int dirfd(DIR*);
+void rewinddir(DIR*);
 
 __END_DECLS

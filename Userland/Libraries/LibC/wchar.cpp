@@ -153,4 +153,23 @@ long long wcstoll(const wchar_t*, wchar_t**, int)
     dbgln("FIXME: Implement wcstoll()");
     TODO();
 }
+
+int mbsinit([[maybe_unused]] const mbstate_t* ps)
+{
+    dbgln("FIXME: Implement mbsinit()");
+    TODO();
+}
+
+size_t mbrtowc([[maybe_unused]] wchar_t* __restrict pwc, [[maybe_unused]] const char* __restrict s,
+    [[maybe_unused]] size_t n, [[maybe_unused]] mbstate_t* __restrict ps)
+{
+    dbgln("FIXME: Implement mbrtowc()");
+    TODO();
+}
+size_t mbsrtowcs([[maybe_unused]] wchar_t* __restrict dest, [[maybe_unused]] const char** __restrict src,
+    [[maybe_unused]] size_t len, [[maybe_unused]] mbstate_t* __restrict ps)
+{
+    dbgln("FIXME: Implement mbsrtowc()");
+    TODO();
+}
 }

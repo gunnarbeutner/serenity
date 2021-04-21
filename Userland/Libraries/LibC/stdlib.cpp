@@ -176,8 +176,6 @@ inline int generate_unique_filename(char* pattern, Callback callback)
     return EEXIST;
 }
 
-extern "C" {
-
 long getauxval(long type)
 {
     errno = 0;
@@ -194,6 +192,10 @@ long getauxval(long type)
     return 0;
 }
 
+extern "C" {
+    void _fini();
+}
+
 void exit(int status)
 {
     __cxa_finalize(nullptr);
@@ -201,7 +203,6 @@ void exit(int status)
     if (secure_getenv("LIBC_DUMP_MALLOC_STATS"))
         serenity_dump_malloc_stats();
 
-    extern void _fini();
     _fini();
     fflush(stdout);
     fflush(stderr);
@@ -1174,4 +1175,16 @@ int unlockpt([[maybe_unused]] int fd)
 {
     return 0;
 }
+
+static char* s_progname;
+
+const char* getprogname()
+{
+    return s_progname;
+}
+
+void setprogname(const char* name)
+{
+    free(s_progname);
+    s_progname = strdup(name);
 }
