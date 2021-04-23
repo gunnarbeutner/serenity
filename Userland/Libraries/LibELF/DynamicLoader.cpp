@@ -465,6 +465,16 @@ DynamicLoader::RelocationResult DynamicLoader::do_relocation(size_t total_tls_si
         *patch_ptr += (FlatPtr)m_dynamic_object->base_address().as_ptr(); // + addend for RelA (addend for Rel is stored at addr)
         break;
     }
+    case R_386_TLS_DTPMOD32: {
+        // FIXME: Fill in module index.
+        *patch_ptr = 0;
+        break;
+    }
+    case R_386_TLS_DTPOFF32: {
+        // FIXME: Fill in offset.
+        *patch_ptr = 0;
+        break;
+    }
     case R_386_TLS_TPOFF32:
     case R_386_TLS_TPOFF: {
         auto symbol = relocation.symbol();

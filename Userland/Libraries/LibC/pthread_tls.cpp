@@ -106,5 +106,14 @@ void __pthread_key_destroy_for_current_thread()
     }
     __pthread_mutex_unlock(&s_keys.mutex);
 }
+
+void* __tls_get_addr(void*);
+
+void* __tls_get_addr(void*)
+{
+    return nullptr;
+}
+
+void* ___tls_get_addr(void*) __attribute__((weak, alias("__tls_get_addr")));
 }
 #endif

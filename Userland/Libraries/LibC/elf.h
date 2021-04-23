@@ -790,4 +790,6 @@ struct elf_args {
 #define R_386_JMP_SLOT 7   /* Fixed up by dynamic loader */
 #define R_386_RELATIVE 8   /* Base address + Addned */
 #define R_386_TLS_TPOFF 14 /* Negative offset into the static TLS storage */
+#define R_386_TLS_DTPMOD32 35 /* Module index */
+#define R_386_TLS_DTPOFF32 36 /* TLS block offset */
 #define R_386_TLS_TPOFF32 37
