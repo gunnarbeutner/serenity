@@ -1,4 +1,4 @@
-add_compile_options(-Os)
+add_compile_options(-Os -ggdb3)
 
 if ("${SERENITY_ARCH}" STREQUAL "i686")
     set(KERNEL_ARCH i386)
@@ -11,7 +11,9 @@ set(KERNEL_HEAP_SOURCES
     Heap/kmalloc.cpp
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_STATIC}")
+set(KERNEL_STDLIB_SOURCES
+    StdLib.cpp
+)
 
 set(KERNEL_SOURCES
     ACPI/DynamicParser.cpp
@@ -128,7 +130,6 @@ set(KERNEL_SOURCES
     RTC.cpp
     Random.cpp
     Scheduler.cpp
-    StdLib.cpp
     Syscall.cpp
     Syscalls/anon_create.cpp
     Syscalls/access.cpp
@@ -334,8 +335,6 @@ add_compile_definitions(KERNEL)
 #       It's needed because CLion doesn't understand the way we switch compilers mid-build.
 add_compile_definitions(__serenity__)
 
-add_link_options(LINKER:-T ${CMAKE_CURRENT_BINARY_DIR}/linker.ld -nostdlib)
-
 # HACK: This is to work around a bug in CMake dependency resolution, the
 #       kernel won't re-link when boot.S changes without this.
 set_source_files_properties(init.cpp
@@ -346,6 +345,8 @@ set_source_files_properties(init.cpp
 add_library(boot OBJECT Arch/${KERNEL_ARCH}/Boot/boot.S)
 
 add_library(kernel_heap STATIC ${KERNEL_HEAP_SOURCES})
+add_library(kernel_stdlib STATIC ${KERNEL_STDLIB_SOURCES})
+
 file(GENERATE OUTPUT linker.ld INPUT linker.ld)
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES SerenityOS)
@@ -358,7 +359,8 @@ else()
 endif()
 
 add_executable(Kernel ${SOURCES})
-target_link_libraries(Kernel kernel_heap gcc stdc++)
+target_link_options(Kernel PRIVATE -static -T ${CMAKE_CURRENT_BINARY_DIR}/linker.ld -nostdlib)
+target_link_libraries(Kernel kernel_heap kernel_stdlib gcc stdc++)
 add_dependencies(Kernel boot kernel_heap)
 install(TARGETS Kernel RUNTIME DESTINATION boot)
 serenity_add_ak_precompiled_headers_to_target(Kernel)

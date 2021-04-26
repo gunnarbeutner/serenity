@@ -115,16 +115,17 @@ KResultOr<int> Process::sys$module_load(Userspace<const char*> user_path, size_t
     elf_image->for_each_symbol([&](const ELF::Image::Symbol& symbol) {
         dbgln(" - {} '{}' @ {:p}, size={}", symbol.type(), symbol.name(), symbol.value(), symbol.size());
         if (symbol.name() == "module_init") {
-            module->module_init = (ModuleInitPtr)(text_base + symbol.value());
+            module->module_init = (ModuleInitPtr)(storage.data() + symbol.value());
         } else if (symbol.name() == "module_fini") {
-            module->module_fini = (ModuleFiniPtr)(text_base + symbol.value());
+            module->module_fini = (ModuleFiniPtr)(storage.data() + symbol.value());
         } else if (symbol.name() == "module_name") {
-            const u8* storage = section_storage_by_name.get(symbol.section().name()).value_or(nullptr);
-            if (storage)
-                module->name = String((const char*)(storage + symbol.value()));
+            module->name = String((const char*)(storage.data() + symbol.value()));
         }
         return IterationDecision::Continue;
     });
+
+    dbgln("module name: {}", module->name);
+    dbgln("module base: {}", storage.data());
 
     if (!module->module_init)
         return EINVAL;
