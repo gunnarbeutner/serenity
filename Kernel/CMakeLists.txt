@@ -1,4 +1,4 @@
-add_compile_options(-Os)
+add_compile_options(-Os -ggdb3)
 
 if ("${SERENITY_ARCH}" STREQUAL "i686")
     set(KERNEL_ARCH i386)
