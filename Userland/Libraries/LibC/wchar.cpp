@@ -55,6 +55,11 @@ int wcsncmp(const wchar_t* s1, const wchar_t* s2, size_t n)
     return 0;
 }
 
+int wcsncasecmp([[maybe_unused]] const wchar_t *s1, [[maybe_unused]] const wchar_t *s2, [[maybe_unused]] size_t n)
+{
+    TODO();
+}
+
 wchar_t* wcschr(const wchar_t* str, int c)
 {
     wchar_t ch = c;
