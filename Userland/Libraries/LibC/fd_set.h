@@ -12,8 +12,14 @@
 #define FD_SET(fd, set) ((set)->bits[(fd / 8)] |= (1 << (fd) % 8))
 #define FD_ISSET(fd, set) ((set)->bits[(fd / 8)] & (1 << (fd) % 8))
 
+typedef unsigned char __fd_mask;
+typedef __fd_mask fd_mask;
+
+#define __NFDBITS (sizeof(__fd_mask) * 8)
+#define NFDBITS __NFDBITS
+
 struct __fd_set {
-    unsigned char bits[FD_SETSIZE / 8];
+    __fd_mask bits[FD_SETSIZE / 8];
 };
 
 typedef struct __fd_set fd_set;
