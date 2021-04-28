@@ -1,0 +1,53 @@
+diff -Naur gdb-10.1/gdb/dwarf2/index-write.c gdb-10.1.serenity/gdb/dwarf2/index-write.c
+--- gdb-10.1/gdb/dwarf2/index-write.c	2020-10-24 06:23:02.000000000 +0200
++++ gdb-10.1.serenity/gdb/dwarf2/index-write.c	2021-04-28 23:14:34.837801215 +0200
+@@ -777,7 +777,7 @@
+     gdb_assert (m_abbrev_table.empty ());
+     const size_t name_count = m_name_to_value_set.size ();
+     m_bucket_table.resize
+-      (std::pow (2, std::ceil (std::log2 (name_count * 4 / 3))));
++      (pow (2, ceil (log2 (name_count * 4 / 3))));
+     m_hash_table.reserve (name_count);
+     m_name_table_string_offs.reserve (name_count);
+     m_name_table_entry_offs.reserve (name_count);
+diff -Naur gdb-10.1/gdb/ser-unix.c gdb-10.1.serenity/gdb/ser-unix.c
+--- gdb-10.1/gdb/ser-unix.c	2020-09-13 04:33:41.000000000 +0200
++++ gdb-10.1.serenity/gdb/ser-unix.c	2021-04-28 23:15:06.435033583 +0200
+@@ -168,7 +168,11 @@
+   /* Ignore SIGTTOU which may occur during the drain.  */
+   scoped_ignore_sigttou ignore_sigttou;
+ 
++#ifndef __serenity__
+   return tcdrain (scb->fd);
++#else
++  return 0;
++#endif
+ }
+ 
+ static int
+@@ -188,7 +192,11 @@
+ static int
+ hardwire_send_break (struct serial *scb)
+ {
++#ifndef __serenity__
+   return tcsendbreak (scb->fd, 0);
++#else
++  return 0;
++#endif
+ }
+ 
+ static void
+diff -Naur gdb-10.1/gnulib/import/fnmatch_loop.c gdb-10.1.serenity/gnulib/import/fnmatch_loop.c
+--- gdb-10.1/gnulib/import/fnmatch_loop.c	2020-09-13 04:33:41.000000000 +0200
++++ gdb-10.1.serenity/gnulib/import/fnmatch_loop.c	2021-04-28 23:15:42.925686987 +0200
+@@ -26,6 +26,10 @@
+   bool no_leading_period;
+ };
+ 
++#ifdef __serenity__
++#define FNM_EXTMATCH 7000
++#endif
++
+ /* Match STRING against the file name pattern PATTERN, returning zero if
+    it matches, nonzero if not.  */
+ static int FCT (const CHAR *pattern, const CHAR *string,
