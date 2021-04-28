@@ -44,6 +44,7 @@ Time kgettimeofday();
     __ENUMERATE_PLEDGE_PROMISE(cpath)     \
     __ENUMERATE_PLEDGE_PROMISE(dpath)     \
     __ENUMERATE_PLEDGE_PROMISE(inet)      \
+    __ENUMERATE_PLEDGE_PROMISE(dns)       \
     __ENUMERATE_PLEDGE_PROMISE(id)        \
     __ENUMERATE_PLEDGE_PROMISE(proc)      \
     __ENUMERATE_PLEDGE_PROMISE(ptrace)    \
