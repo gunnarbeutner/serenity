@@ -59,6 +59,7 @@ chown 0:$phys_gid mnt/bin/shutdown
 chown 0:$phys_gid mnt/bin/reboot
 chown 0:0 mnt/boot/Kernel
 chown 0:0 mnt/res/kernel.map
+chown 0:$wheel_gid var/empty
 chmod 0400 mnt/res/kernel.map
 chmod 0400 mnt/boot/Kernel
 chmod 4750 mnt/bin/su
