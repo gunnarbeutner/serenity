@@ -24,6 +24,18 @@ function(serenity_generated_sources target_name)
     endif()
 endfunction()
 
+function(split_symbols target_name regular_target_dir fs_name)
+    add_custom_command(
+        TARGET ${target_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory debug
+        COMMAND ${CMAKE_OBJCOPY} --only-keep-debug ${fs_name} debug/${fs_name}
+        COMMAND ${CMAKE_OBJCOPY} --strip-debug ${fs_name}
+        COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=debug/${fs_name} ${fs_name}
+        BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/debug/${fs_name}
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/debug/${fs_name} DESTINATION ${regular_target_dir}/debug OPTIONAL)
+endfunction()
+
 function(serenity_lib target_name fs_name)
     serenity_install_headers(${target_name})
     serenity_install_sources("Userland/Libraries/${target_name}")
@@ -32,16 +44,7 @@ function(serenity_lib target_name fs_name)
     install(TARGETS ${target_name} DESTINATION usr/lib OPTIONAL)
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME ${fs_name})
     serenity_generated_sources(${target_name})
-endfunction()
-
-function(serenity_shared_lib target_name fs_name)
-    serenity_install_headers(${target_name})
-    serenity_install_sources("Userland/Libraries/${target_name}")
-    add_library(${target_name} SHARED ${SOURCES} ${GENERATED_SOURCES})
-    set_target_properties(${target_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
-    install(TARGETS ${target_name} DESTINATION usr/lib OPTIONAL)
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME ${fs_name})
-    serenity_generated_sources(${target_name})
+    split_symbols(${target_name} usr/lib lib${fs_name}.so)
 endfunction()
 
 function(serenity_libc target_name fs_name)
@@ -53,6 +56,7 @@ function(serenity_libc target_name fs_name)
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME ${fs_name})
     target_link_directories(LibC PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
     serenity_generated_sources(${target_name})
+    split_symbols(${target_name} usr/lib lib${fs_name}.so)
 endfunction()
 
 function(serenity_libc_static target_name fs_name)
@@ -71,6 +75,7 @@ function(serenity_bin target_name)
     set_target_properties(${target_name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
     install(TARGETS ${target_name} RUNTIME DESTINATION bin OPTIONAL)
     serenity_generated_sources(${target_name})
+    split_symbols(${target_name} bin ${target_name})
 endfunction()
 
 function(serenity_test test_src sub_dir)
