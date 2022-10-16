@@ -10,6 +10,7 @@
 #pragma once
 
 #include <Kernel/Arch/aarch64/Registers.h>
+#include <Kernel/Arch/aarch64/Processor.h>
 
 namespace Kernel::Aarch64::Asm {
 
@@ -92,5 +93,12 @@ inline void enter_el1_from_el2()
                  "entered_el1:" ::
                      : "x0");
 }
+}
 
+namespace Kernel {
+
+inline bool are_interrupts_enabled()
+{
+    return Processor::are_interrupts_enabled();
+}
 }

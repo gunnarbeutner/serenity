@@ -276,6 +276,7 @@ Time TimeManagement::now()
 
 UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_and_initialize_periodic_timers()
 {
+#if ARCH(I386) || ARCH(X86_64)
     bool should_enable = is_hpet_periodic_mode_allowed();
     dbgln("Time: Scanning for periodic timers");
     Vector<HardwareTimerBase*> timers;
@@ -287,6 +288,11 @@ UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_and_initialize_
         }
     }
     return timers;
+#elif ARCH(AARCH64)
+    TODO_AARCH64();
+#else
+#    error Unknown architecture
+#endif
 }
 
 UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_for_non_periodic_timers()
@@ -415,6 +421,7 @@ void TimeManagement::update_time(RegisterState const&)
 
 void TimeManagement::increment_time_since_boot_hpet()
 {
+#if ARCH(I386) || ARCH(X86_64)
     VERIFY(!m_time_keeper_timer.is_null());
     VERIFY(m_time_keeper_timer->timer_type() == HardwareTimerType::HighPrecisionEventTimer);
 
@@ -436,6 +443,7 @@ void TimeManagement::increment_time_since_boot_hpet()
     m_update1.store(update_iteration + 1, AK::MemoryOrder::memory_order_release);
 
     update_time_page();
+#endif
 }
 #elif ARCH(AARCH64)
 UNMAP_AFTER_INIT bool TimeManagement::probe_and_set_aarch64_hardware_timers()
