@@ -503,6 +503,8 @@ else()
         KSyms.cpp
         MiniStdLib.cpp
         StdLib.cpp
+        ThreadTracer.cpp
+        Time/TimeManagement.cpp
         UBSanitizer.cpp
         UserOrKernelBuffer.cpp
 

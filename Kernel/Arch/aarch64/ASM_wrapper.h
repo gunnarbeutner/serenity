@@ -92,5 +92,13 @@ inline void enter_el1_from_el2()
                  "entered_el1:" ::
                      : "x0");
 }
+}
+
+namespace Kernel {
+inline bool are_interrupts_enabled()
+{
+    auto daif = Aarch64::DAIF::read();
+    return !daif.I;
+}
 
 }

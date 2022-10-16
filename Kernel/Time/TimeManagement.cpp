@@ -7,8 +7,8 @@
 #include <AK/Singleton.h>
 #include <AK/StdLibExtras.h>
 #include <AK/Time.h>
+#include <Kernel/Arch/InterruptDisabler.h>
 #if ARCH(I386) || ARCH(X86_64)
-#    include <Kernel/Arch/InterruptDisabler.h>
 #    include <Kernel/Arch/x86/Time/APICTimer.h>
 #    include <Kernel/Arch/x86/Time/HPET.h>
 #    include <Kernel/Arch/x86/Time/HPETComparator.h>
@@ -45,11 +45,13 @@ TimeManagement& TimeManagement::the()
 // which may not necessarily relate to wall time
 static u64 (*s_scheduler_current_time)();
 
+#if ARCH(I386) || ARCH(X86_64)
 static u64 current_time_monotonic()
 {
     // We always need a precise timestamp here, we cannot rely on a coarse timestamp
     return (u64)TimeManagement::the().monotonic_time(TimePrecision::Precise).to_nanoseconds();
 }
+#endif
 
 u64 TimeManagement::scheduler_current_time()
 {
@@ -123,7 +125,13 @@ Time TimeManagement::monotonic_time(TimePrecision precision) const
             // seconds and ticks became invalid, producing an incorrect time.
             // Be sure to not modify m_seconds_since_boot and m_ticks_this_second
             // because this may only be modified by the interrupt handler
+#if ARCH(I386) || ARCH(X86_64)
             HPET::the().update_time(seconds, ticks, true);
+#elif ARCH(AARCH64)
+            TODO_AARCH64();
+#else
+#    error Unknown architecture
+#endif
         }
     } while (update_iteration != m_update2.load(AK::MemoryOrder::memory_order_acquire));
 
@@ -204,7 +212,13 @@ time_t TimeManagement::ticks_per_second() const
 
 time_t TimeManagement::boot_time()
 {
+#if ARCH(I386) || ARCH(X86_64)
     return RTC::boot_time();
+#elif ARCH(AARCH64)
+    TODO_AARCH64();
+#else
+#    error Unknown architecture
+#endif
 }
 
 UNMAP_AFTER_INIT TimeManagement::TimeManagement()
@@ -241,6 +255,7 @@ Time TimeManagement::now()
 
 UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_and_initialize_periodic_timers()
 {
+#if ARCH(I386) || ARCH(X86_64)
     bool should_enable = is_hpet_periodic_mode_allowed();
     dbgln("Time: Scanning for periodic timers");
     Vector<HardwareTimerBase*> timers;
@@ -252,6 +267,11 @@ UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_and_initialize_
         }
     }
     return timers;
+#elif ARCH(AARCH64)
+    TODO_AARCH64();
+#else
+#    error Unknown architecture
+#endif
 }
 
 UNMAP_AFTER_INIT Vector<HardwareTimerBase*> TimeManagement::scan_for_non_periodic_timers()
@@ -381,6 +401,7 @@ void TimeManagement::update_time(RegisterState const&)
 
 void TimeManagement::increment_time_since_boot_hpet()
 {
+#if ARCH(I386) || ARCH(X86_64)
     VERIFY(!m_time_keeper_timer.is_null());
     VERIFY(m_time_keeper_timer->timer_type() == HardwareTimerType::HighPrecisionEventTimer);
 
@@ -402,6 +423,7 @@ void TimeManagement::increment_time_since_boot_hpet()
     m_update1.store(update_iteration + 1, AK::MemoryOrder::memory_order_release);
 
     update_time_page();
+#endif
 }
 
 void TimeManagement::increment_time_since_boot()
