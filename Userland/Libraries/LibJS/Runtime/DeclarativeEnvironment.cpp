@@ -62,7 +62,11 @@ ThrowCompletionOr<void> DeclarativeEnvironment::create_mutable_binding(VM&, FlyS
     // NOTE: We skip this to avoid O(n) traversal of m_bindings.
 
     // 2. Create a mutable binding in envRec for N and record that it is uninitialized. If D is true, record that the newly created binding may be deleted by a subsequent DeleteBinding call.
-    m_bindings.append(Binding {
+    size_t index;
+    AK::binary_search(m_bindings.span(), name, &index, compare_name_and_binding);
+    while (index < m_bindings.size() && m_bindings[index].name.impl() < name.impl())
+        index++;
+    m_bindings.insert(index, Binding {
         .name = name,
         .value = {},
         .strict = false,
@@ -82,7 +86,11 @@ ThrowCompletionOr<void> DeclarativeEnvironment::create_immutable_binding(VM&, Fl
     // NOTE: We skip this to avoid O(n) traversal of m_bindings.
 
     // 2. Create an immutable binding in envRec for N and record that it is uninitialized. If S is true, record that the newly created binding is a strict binding.
-    m_bindings.append(Binding {
+    size_t index;
+    AK::binary_search(m_bindings.span(), name, &index, compare_name_and_binding);
+    while (index < m_bindings.size() && m_bindings[index].name.impl() < name.impl())
+        index++;
+    m_bindings.insert(index, Binding {
         .name = name,
         .value = {},
         .strict = strict,

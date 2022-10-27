@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <AK/BinarySearch.h>
 #include <AK/FlyString.h>
 #include <AK/HashMap.h>
 #include <LibJS/AST.h>
@@ -25,7 +26,23 @@ class DeclarativeEnvironment : public Environment {
         bool mutable_ { false };
         bool can_be_deleted { false };
         bool initialized { false };
+
+        bool operator<(Binding const& other)
+        {
+            return name.impl() < other.name.impl();
+        }
     };
+
+    static int compare_name_and_binding(FlyString const& name, Binding const& binding)
+    {
+        if (name.impl() > binding.name.impl())
+            return 1;
+
+        if (name.impl() < binding.name.impl())
+            return -1;
+
+        return 0;
+    }
 
 public:
     static DeclarativeEnvironment* create_for_per_iteration_bindings(Badge<ForStatement>, DeclarativeEnvironment& other, size_t bindings_size);
@@ -102,14 +119,11 @@ protected:
 
     virtual Optional<BindingAndIndex> find_binding_and_index(FlyString const& name) const
     {
-        auto it = m_bindings.find_if([&](auto const& binding) {
-            return binding.name == name;
-        });
-
-        if (it == m_bindings.end())
+        size_t index;
+        auto* binding = AK::binary_search(m_bindings.span(), name, &index, compare_name_and_binding);
+        if (!binding)
             return {};
-
-        return BindingAndIndex { const_cast<Binding*>(&(*it)), it.index() };
+        return BindingAndIndex { const_cast<Binding*>(binding), index };
     }
 
 private:
